@@ -7,20 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A10000010000000000000001 /* PDFCompressorApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000001; };
-		A10000020000000000000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000020000000000000002; };
-		A10000030000000000000003 /* DropZoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000030000000000000003; };
-		A10000040000000000000004 /* SizeSliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000040000000000000004; };
-		A10000050000000000000005 /* OptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000050000000000000005; };
-		A10000060000000000000006 /* PageSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000060000000000000006; };
-		A10000070000000000000007 /* CompressButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000070000000000000007; };
-		A10000080000000000000008 /* ProgressSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000080000000000000008; };
-		A10000090000000000000009 /* ResultSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000090000000000000009; };
-		A1000010000000000000000A /* PDFCompressor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000010000000000000000A; };
-		A1000011000000000000000B /* PreviewEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000011000000000000000B; };
-		A1000012000000000000000C /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000012000000000000000C; };
-		A1000013000000000000000D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A2000013000000000000000D; };
-		A1000014000000000000000E /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A2000016000000000000000E; };
+		A10000010000000000000001 /* PDFCompressorApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000001 /* PDFCompressorApp.swift */; };
+		A10000020000000000000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000020000000000000002 /* ContentView.swift */; };
+		A10000030000000000000003 /* DropZoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000030000000000000003 /* DropZoneView.swift */; };
+		A10000040000000000000004 /* SizeSliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000040000000000000004 /* SizeSliderView.swift */; };
+		A10000050000000000000005 /* OptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000050000000000000005 /* OptionsView.swift */; };
+		A10000060000000000000006 /* PageSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000060000000000000006 /* PageSelectorView.swift */; };
+		A10000070000000000000007 /* CompressButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000070000000000000007 /* CompressButton.swift */; };
+		A10000080000000000000008 /* ProgressSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000080000000000000008 /* ProgressSection.swift */; };
+		A10000090000000000000009 /* ResultSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000090000000000000009 /* ResultSection.swift */; };
+		A1000010000000000000000A /* PDFCompressor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000010000000000000000A /* PDFCompressor.swift */; };
+		A1000011000000000000000B /* PreviewEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000011000000000000000B /* PreviewEstimator.swift */; };
+		A1000012000000000000000C /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000012000000000000000C /* AppState.swift */; };
+		A1000013000000000000000D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A2000013000000000000000D /* Assets.xcassets */; };
+		A1000014000000000000000E /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A2000016000000000000000E /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -54,7 +54,7 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		A40000010000000000000001 /* Root */ = {
+		A40000010000000000000001 = {
 			isa = PBXGroup;
 			children = (
 				A40000020000000000000002 /* PDFCompressor */,
@@ -152,7 +152,7 @@
 				en,
 				Base,
 			);
-			mainGroup = A40000010000000000000001 /* Root */;
+			mainGroup = A40000010000000000000001;
 			productRefGroup = A40000050000000000000005 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -323,7 +323,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = V7R6ZR7F9Q;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PDFCompressor/Info.plist;
@@ -351,7 +351,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = V7R6ZR7F9Q;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PDFCompressor/Info.plist;
@@ -392,7 +392,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
 	};
 	rootObject = A80000010000000000000001 /* Project object */;
 }
