@@ -53,7 +53,9 @@ struct SizeSliderView: View {
                 .foregroundColor(appState.estimateColor)
 
             if appState.keepTextMissesTarget {
-                Text("With Keep text this PDF will probably stay above the target. Its images cannot be shrunk much without turning pages into pictures.")
+                Text(appState.hasTextLayer && appState.keepTextLayer
+                     ? "With Keep text this PDF will probably stay above the target. Maximum compression can reach it and still keep the text selectable."
+                     : "With Keep text this PDF will probably stay above the target. Its images cannot be shrunk much without turning pages into pictures.")
                     .font(.system(size: 11))
                     .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)

@@ -37,7 +37,7 @@ struct ResultSection: View {
     @ViewBuilder
     private var missedTargetHint: some View {
         if result.mode == .keepText {
-            Text("Keep text could not reach the target size. The images are already at the lowest setting, the rest of the file is text and vector data. Maximum compression turns every page into a picture, which can go smaller but removes selectable text, and for text or vector PDFs it can even make the file bigger.")
+            Text("Keep text could not reach the target size. The images are already at the lowest setting, the rest of the file is text and vector data. Maximum compression turns every page into a picture, which can go smaller. It can keep the text selectable through an invisible text layer, but for text or vector PDFs it can even make the file bigger.")
                 .font(.system(size: 11))
                 .foregroundColor(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
