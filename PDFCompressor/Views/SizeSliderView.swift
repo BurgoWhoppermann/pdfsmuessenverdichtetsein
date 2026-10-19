@@ -51,6 +51,19 @@ struct SizeSliderView: View {
             Text(String(format: "Estimated result: ~%.2f MB", estimatedMB))
                 .font(.system(size: 12))
                 .foregroundColor(appState.estimateColor)
+
+            if appState.keepTextMissesTarget {
+                Text("With Keep text this PDF will probably stay above the target. Its images cannot be shrunk much without turning pages into pictures.")
+                    .font(.system(size: 11))
+                    .foregroundColor(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Button("Switch to Maximum compression") {
+                    appState.mode = .maximum
+                    appState.scheduleEstimate()
+                }
+                .font(.system(size: 12))
+                .disabled(appState.isCompressing)
+            }
         }
     }
 }

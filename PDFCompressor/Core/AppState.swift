@@ -169,6 +169,13 @@ class AppState: ObservableObject {
         outputURL = nil
     }
 
+    /// True when the estimate says Keep text will end clearly above the chosen target.
+    var keepTextMissesTarget: Bool {
+        guard mode == .keepText, let estimated = estimatedSizeBytes, fileSizeMB > 0 else { return false }
+        let targetBytes = fileSizeMB * 1024.0 * 1024.0 * Double(targetPercentage) / 100.0
+        return Double(estimated) > targetBytes * 1.05
+    }
+
     var estimateColor: Color {
         guard let estimated = estimatedSizeBytes, fileSizeMB > 0 else { return .secondary }
         let estimatedMB = Double(estimated) / (1024.0 * 1024.0)
