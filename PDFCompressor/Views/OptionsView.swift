@@ -10,6 +10,31 @@ struct OptionsView: View {
             Text("Options")
                 .font(.system(size: 14, weight: .bold))
 
+            // Mode
+            Picker("Mode", selection: $appState.mode) {
+                ForEach(CompressionMode.allCases) { mode in
+                    Text(mode.title).tag(mode)
+                }
+            }
+            .pickerStyle(.segmented)
+            .labelsHidden()
+            .disabled(appState.isCompressing)
+            .onChange(of: appState.mode) { _ in
+                appState.scheduleEstimate()
+            }
+
+            Text(appState.mode.detail)
+                .font(.system(size: 11))
+                .foregroundColor(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            if !appState.hasTextLayer {
+                Text("This PDF has no text layer (probably a scan), so Maximum compression is preselected.")
+                    .font(.system(size: 11))
+                    .foregroundColor(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
             // Grayscale toggle
             Toggle("Convert to grayscale (B&W)", isOn: $appState.grayscale)
                 .font(.system(size: 13))
