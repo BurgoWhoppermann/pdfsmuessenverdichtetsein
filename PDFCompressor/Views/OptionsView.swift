@@ -23,7 +23,9 @@ struct OptionsView: View {
                 appState.scheduleEstimate()
             }
 
-            Text(appState.mode.detail)
+            Text(appState.mode == .maximum && appState.hasTextLayer && appState.keepTextLayer
+                 ? CompressionMode.maximumWithTextLayerDetail
+                 : appState.mode.detail)
                 .font(.system(size: 11))
                 .foregroundColor(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -33,6 +35,15 @@ struct OptionsView: View {
                     .font(.system(size: 11))
                     .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
+            }
+
+            if appState.mode == .maximum && appState.hasTextLayer {
+                Toggle("Keep text selectable (invisible text layer)", isOn: $appState.keepTextLayer)
+                    .font(.system(size: 13))
+                    .disabled(appState.isCompressing)
+                    .onChange(of: appState.keepTextLayer) { _ in
+                        appState.scheduleEstimate()
+                    }
             }
 
             // Grayscale toggle

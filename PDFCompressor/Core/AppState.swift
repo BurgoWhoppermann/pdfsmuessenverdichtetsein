@@ -19,6 +19,8 @@ class AppState: ObservableObject {
     @Published var pageCount: Int = 0
     @Published var mode: CompressionMode = .keepText
     @Published var hasTextLayer: Bool = true
+    /// Maximum compression only: keep the text selectable and searchable through an invisible layer.
+    @Published var keepTextLayer: Bool = true
 
     @Published var isCompressing: Bool = false
     @Published var progressMessage: String = ""
@@ -106,7 +108,8 @@ class AppState: ObservableObject {
             targetPercentage: targetPercentage,
             grayscale: grayscale,
             pagesToRemove: pagesToRemove,
-            mode: mode
+            mode: mode,
+            keepTextLayer: keepTextLayer
         )
 
         Task.detached(priority: .userInitiated) { [weak self] in

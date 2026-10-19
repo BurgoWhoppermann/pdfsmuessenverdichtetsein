@@ -30,6 +30,9 @@ enum CompressionMode: String, CaseIterable, Identifiable {
             return "Maximum compression: Every page becomes a picture. Smallest files, but text can no longer be selected, copied or searched."
         }
     }
+
+    /// Replaces `detail` for Maximum compression when the invisible text layer is on.
+    static let maximumWithTextLayerDetail = "Maximum compression: Every page becomes a picture, with the text laid invisibly on top. Text stays selectable, copyable and searchable, and the file stays small."
 }
 
 struct CompressionResult {
@@ -52,6 +55,8 @@ struct CompressionOptions {
     var grayscale: Bool = false
     var pagesToRemove: Set<Int> = []
     var mode: CompressionMode = .keepText
+    /// Maximum compression only: lay the page's text invisibly over the picture, so it stays selectable and searchable.
+    var keepTextLayer: Bool = true
 }
 
 // MARK: - Page Geometry
@@ -137,6 +142,89 @@ enum QuartzCompression {
         plist["FilterData"] = filterData
         plist["Name"] = "PDFCompressor"
         return plist
+    }
+}
+
+// MARK: - Maximum compression: invisible text layer
+
+enum InvisibleTextLayer {
+
+    /// Draws the text of `page` into `context` as invisible text, line by line, stretched over the box where
+    /// the page shows that line. The context is expected to be in the page's display space (crop box origin
+    /// at 0,0, rotation applied), the same space `page.displaySize` describes.
+    ///
+    /// Lines come from PDFKit's line selections. Per-character bounds are not used: on some PDFs they report
+    /// zero heights and wrong sizes, which loses letters.
+    static func draw(_ page: PDFPage, in context: CGContext) {
+        let box = page.bounds(for: .cropBox)
+        guard let selection = page.selection(for: box) else { return }
+        let rotation = ((page.rotation % 360) + 360) % 360
+
+        context.saveGState()
+        context.setTextDrawingMode(.invisible)
+        context.setFillColor(CGColor(gray: 0, alpha: 1))
+
+        for line in selection.selectionsByLine() {
+            // Embedded images show up as U+FFFC. They are no text.
+            let string = (line.string ?? "")
+                .replacingOccurrences(of: "\u{FFFC}", with: "")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            let bounds = line.bounds(for: page)
+            guard !string.isEmpty, bounds.width > 0, bounds.height > 0 else { continue }
+            let rect = display(bounds, cropBox: box, rotation: rotation)
+            guard rect.intersects(CGRect(origin: .zero, size: page.displaySize)) else { continue }
+            drawLine(string, in: rect, context: context)
+        }
+        context.restoreGState()
+    }
+
+    /// Maps a rectangle from page space (as PDFKit reports it) to display space.
+    private static func display(_ r: CGRect, cropBox b: CGRect, rotation: Int) -> CGRect {
+        let x0 = r.minX - b.minX, x1 = r.maxX - b.minX
+        let y0 = r.minY - b.minY, y1 = r.maxY - b.minY
+        switch rotation {
+        case 90:  return CGRect(x: y0, y: b.width - x1, width: y1 - y0, height: x1 - x0)
+        case 180: return CGRect(x: b.width - x1, y: b.height - y1, width: x1 - x0, height: y1 - y0)
+        case 270: return CGRect(x: b.height - y1, y: x0, width: y1 - y0, height: x1 - x0)
+        default:  return CGRect(x: x0, y: y0, width: x1 - x0, height: y1 - y0)
+        }
+    }
+
+    /// Draws `string` stretched to fill `rect`. Text that runs vertically is turned to follow its box.
+    private static func drawLine(_ string: String, in rect: CGRect, context: CGContext) {
+        let vertical = rect.height > rect.width * 1.5 && string.count > 1
+        let length = vertical ? rect.height : rect.width
+        let thickness = vertical ? rect.width : rect.height
+
+        let font = CTFontCreateWithName("Helvetica" as CFString, 10, nil)
+        let attributes: [NSAttributedString.Key: Any] = [
+            NSAttributedString.Key(kCTFontAttributeName as String): font,
+            NSAttributedString.Key(kCTLigatureAttributeName as String): 0,
+        ]
+        let measured = CTLineCreateWithAttributedString(NSAttributedString(string: string, attributes: attributes))
+        let naturalWidth = CTLineGetTypographicBounds(measured, nil, nil, nil)
+        guard naturalWidth > 0 else { return }
+        // The trailing space sits just past the box. It keeps neighbouring lines apart when text is extracted.
+        let line = CTLineCreateWithAttributedString(NSAttributedString(string: string + " ", attributes: attributes))
+
+        // The font is 10 pt; scale it so its ascent + descent fills the box across, and the line fills it along.
+        let scaleY = thickness / (CTFontGetAscent(font) + CTFontGetDescent(font))
+        let scaleX = length / naturalWidth
+        let descent = CTFontGetDescent(font) * scaleY
+
+        // The stretch goes through the CTM: a non-uniform text matrix is not written to the PDF as such.
+        context.saveGState()
+        if vertical {
+            // Text reads bottom to top.
+            context.translateBy(x: rect.maxX - descent, y: rect.minY)
+            context.rotate(by: .pi / 2)
+        } else {
+            context.translateBy(x: rect.minX, y: rect.minY + descent)
+        }
+        context.scaleBy(x: scaleX, y: scaleY)
+        context.textMatrix = .identity
+        CTLineDraw(line, context)
+        context.restoreGState()
     }
 }
 
@@ -371,6 +459,10 @@ class PDFCompressionEngine {
 
             // Draw the JPEG image filling the page
             pdfContext.draw(jpegImage, in: pageBox)
+
+            if options.keepTextLayer {
+                InvisibleTextLayer.draw(page, in: pdfContext)
+            }
 
             pdfContext.endPage()
         }
