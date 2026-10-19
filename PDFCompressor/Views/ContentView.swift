@@ -30,8 +30,12 @@ struct ContentView: View {
                     }
 
                     // Result
-                    if let result = appState.compressionResult, result.success {
-                        ResultSection(result: result, outputURL: appState.outputURL)
+                    if let result = appState.compressionResult {
+                        ResultSection(
+                            result: result,
+                            outputURL: appState.outputURL,
+                            onSwitchToMaximum: { appState.switchToMaximumCompression() }
+                        )
                     }
                 }
             }

@@ -17,6 +17,8 @@ class AppState: ObservableObject {
     @Published var grayscale: Bool = false
     @Published var pagesToRemove: Set<Int> = []
     @Published var pageCount: Int = 0
+    @Published var mode: CompressionMode = .keepText
+    @Published var hasTextLayer: Bool = true
 
     @Published var isCompressing: Bool = false
     @Published var progressMessage: String = ""
@@ -42,6 +44,9 @@ class AppState: ObservableObject {
         fileSizeMB = Double(fileSize(at: url)) / (1024.0 * 1024.0)
         pageCount = document.pageCount
         pagesToRemove = []
+        // A scan has no text to keep, so start in the mode that can actually shrink it.
+        hasTextLayer = Self.containsText(document)
+        mode = hasTextLayer ? .keepText : .maximum
         compressionResult = nil
         outputURL = nil
         progressMessage = "Ready to compress"
@@ -63,6 +68,7 @@ class AppState: ObservableObject {
         let target = targetPercentage
         let gray = grayscale
         let removedPages = pagesToRemove
+        let selectedMode = mode
 
         estimateTask = Task {
             // Debounce 300ms
@@ -74,7 +80,8 @@ class AppState: ObservableObject {
                 return estimator.estimateSize(
                     targetPercentage: target,
                     grayscale: gray,
-                    pagesToRemove: removedPages
+                    pagesToRemove: removedPages,
+                    mode: selectedMode
                 )
             }.value
 
@@ -98,7 +105,8 @@ class AppState: ObservableObject {
         let options = CompressionOptions(
             targetPercentage: targetPercentage,
             grayscale: grayscale,
-            pagesToRemove: pagesToRemove
+            pagesToRemove: pagesToRemove,
+            mode: mode
         )
 
         Task.detached(priority: .userInitiated) { [weak self] in
@@ -126,12 +134,31 @@ class AppState: ObservableObject {
 
     // MARK: - Helpers
 
+    /// Called from the result hint when Keep text cannot reach the target.
+    func switchToMaximumCompression() {
+        mode = .maximum
+        compressionResult = nil
+        progressMessage = "Switched to Maximum compression. Click Compress PDF again."
+        scheduleEstimate()
+    }
+
+    /// True if any of the first pages carries real text (not just whitespace).
+    private static func containsText(_ document: PDFDocument) -> Bool {
+        for i in 0..<min(document.pageCount, 20) {
+            let text = document.page(at: i)?.string ?? ""
+            if text.filter({ !$0.isWhitespace }).count >= 3 { return true }
+        }
+        return false
+    }
+
     func reset() {
         currentPDFURL = nil
         fileName = ""
         fileSizeMB = 0
         targetPercentage = 50
         grayscale = false
+        mode = .keepText
+        hasTextLayer = true
         pagesToRemove = []
         pageCount = 0
         isCompressing = false
